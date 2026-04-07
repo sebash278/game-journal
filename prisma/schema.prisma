@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  email     String   @unique
+  name      String?
+  password  String?
+  journals  Journal[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Game {
+  id          String    @id @default(cuid())
+  igdbId      Int       @unique
+  name        String
+  summary     String?   @db.Text
+  coverUrl    String?
+  releaseDate DateTime?
+  genres      String[]
+  platforms   String[]
+  journals    Journal[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Journal {
+  id          String    @id @default(cuid())
+  userId      String
+  gameId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game        Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  status      Status    @default(WANT_TO_PLAY)
+  rating      Int?
+  notes       String?   @db.Text
+  startDate   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([userId, gameId])
+  @@index([userId])
+}
+
+enum Status {
+  BACKLOG
+  PLAYING
+  COMPLETED
+  DROPPED
+  WANT_TO_PLAY
+}
