@@ -1,0 +1,169 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    /* Background - Soft pastel lavender */
+    --background: 250 30% 98%;
+    --foreground: 250 20% 15%;
+
+    /* Cards - White with subtle lavender tint */
+    --card: 250 30% 99%;
+    --card-foreground: 250 20% 15%;
+
+    /* Popover */
+    --popover: 250 30% 99%;
+    --popover-foreground: 250 20% 15%;
+
+    /* Primary - Pastel violet */
+    --primary: 250 70% 75%;
+    --primary-foreground: 250 30% 15%;
+
+    /* Secondary - Pastel blue */
+    --secondary: 210 70% 85%;
+    --secondary-foreground: 210 40% 20%;
+
+    /* Muted - Soft gray-lavender */
+    --muted: 250 20% 94%;
+    --muted-foreground: 250 15% 45%;
+
+    /* Accent - Pastel pink-violet */
+    --accent: 280 60% 80%;
+    --accent-foreground: 280 30% 20%;
+
+    /* Destructive - Soft red */
+    --destructive: 0 70% 70%;
+    --destructive-foreground: 0 20% 15%;
+
+    /* Border - Soft lavender-gray */
+    --border: 250 20% 88%;
+    --input: 250 20% 88%;
+    --ring: 250 70% 75%;
+
+    --radius: 1rem;
+  }
+
+  .dark {
+    /* Dark mode - Deep violet background */
+    --background: 250 30% 8%;
+    --foreground: 250 20% 95%;
+
+    --card: 250 30% 10%;
+    --card-foreground: 250 20% 95%;
+
+    --popover: 250 30% 10%;
+    --popover-foreground: 250 20% 95%;
+
+    --primary: 250 70% 70%;
+    --primary-foreground: 250 30% 10%;
+
+    --secondary: 210 50% 20%;
+    --secondary-foreground: 210 50% 90%;
+
+    --muted: 250 20% 15%;
+    --muted-foreground: 250 15% 60%;
+
+    --accent: 280 50% 30%;
+    --accent-foreground: 280 30% 90%;
+
+    --destructive: 0 60% 50%;
+    --destructive-foreground: 0 20% 95%;
+
+    --border: 250 20% 18%;
+    --input: 250 20% 18%;
+    --ring: 250 70% 70%;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer utilities {
+  .animate-in {
+    animation: slideIn 0.4s ease-out;
+  }
+
+  .animate-out {
+    animation: slideOut 0.3s ease-in;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(15px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideOut {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+  }
+
+  .text-gradient {
+    background: linear-gradient(to right, hsl(250 85% 75%), hsl(280 85% 75%), hsl(210 85% 75%));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .text-gradient-subtle {
+    background: linear-gradient(to right, hsl(250 70% 65% / 0.8), hsl(210 70% 65% / 0.8));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .glass {
+    background-color: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(24px);
+    border: 1px solid hsl(250 20% 88% / 0.5);
+  }
+
+  .dark .glass {
+    background-color: rgba(0, 0, 0, 0.4);
+    border: 1px solid hsl(250 20% 30% / 0.3);
+  }
+
+  .glass-strong {
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(40px);
+    border: 1px solid hsl(250 70% 75% / 0.5);
+  }
+
+  .dark .glass-strong {
+    background-color: rgba(0, 0, 0, 0.6);
+    border: 1px solid hsl(250 70% 60% / 0.3);
+  }
+
+  .shadow-pastel {
+    box-shadow:
+      0 4px 6px -1px rgb(250 245 255 / 0.3),
+      0 2px 4px -2px rgb(250 245 255 / 0.2),
+      0 8px 16px -4px rgb(238 242 255 / 0.2);
+  }
+
+  .shadow-pastel-lg {
+    box-shadow:
+      0 10px 15px -3px rgb(250 245 255 / 0.3),
+      0 4px 6px -4px rgb(250 245 255 / 0.2),
+      0 20px 40px -8px rgb(238 242 255 / 0.25);
+  }
+}
+
