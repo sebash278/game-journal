@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Gamepad2, Loader2, Sparkles } from "lucide-react"
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [username, setUsername] = useState("")
@@ -38,7 +38,7 @@ export default function LoginPage() {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // Importante: incluir cookies
+        credentials: 'include',
         body: JSON.stringify({
           username: username.trim(),
           password
@@ -48,11 +48,7 @@ export default function LoginPage() {
       if (response.ok) {
         const data = await response.json()
         console.log('Login successful:', data)
-
-        // Esperar un momento para asegurar que la cookie se estableció
         await new Promise(resolve => setTimeout(resolve, 100))
-
-        // Redirigir manualmente
         window.location.href = '/'
       } else {
         const data = await response.json()
@@ -173,5 +169,17 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   )
 }
