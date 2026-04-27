@@ -1,66 +1,58 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Gamepad2, Loader2, Sparkles } from "lucide-react"
+import { Gamepad2, Loader2, Sparkles, UserPlus } from "lucide-react"
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: ""
+  })
   const [loading, setLoading] = useState(false)
-  const [showSuccess, setShowSuccess] = useState(false)
-  const [error, setError] = useState("")
+  const [errors, setErrors] = useState<string[]>([])
 
-  useEffect(() => {
-    if (searchParams.get('registered') === 'true') {
-      setShowSuccess(true)
-    }
-  }, [searchParams])
-
-  async function handleLogin(e: React.FormEvent) {
+  async function handleRegister(e: React.FormEvent) {
     e.preventDefault()
-    setError("")
+    setErrors([])
 
-    if (!username.trim() || !password.trim()) {
-      setError("Usuario y contraseña son requeridos")
+    if (!formData.username.trim() || !formData.email.trim() ||
+        !formData.password || !formData.confirmPassword) {
+      setErrors(["All fields are required"])
+      return
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setErrors(["Passwords do not match"])
       return
     }
 
     setLoading(true)
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // Importante: incluir cookies
-        body: JSON.stringify({
-          username: username.trim(),
-          password
-        }),
+        body: JSON.stringify(formData),
       })
 
+      const data = await response.json()
+
       if (response.ok) {
-        const data = await response.json()
-        console.log('Login successful:', data)
-
-        // Esperar un momento para asegurar que la cookie se estableció
-        await new Promise(resolve => setTimeout(resolve, 100))
-
-        // Redirigir manualmente
-        window.location.href = '/'
+        router.push('/login?registered=true')
       } else {
-        const data = await response.json()
-        setError(data.error || 'Error al iniciar sesión')
+        setErrors([data.error || 'Error al crear cuenta'])
       }
     } catch (error) {
-      console.error('Login error:', error)
-      setError('Error al iniciar sesión')
+      console.error('Registration error:', error)
+      setErrors(['Error al crear cuenta'])
     } finally {
       setLoading(false)
     }
@@ -73,45 +65,53 @@ export default function LoginPage() {
           <CardHeader className="space-y-6 text-center pb-8">
             <div className="flex justify-center">
               <div className="p-5 rounded-2xl bg-gradient-to-br from-primary/70 to-secondary/70 ring-4 ring-primary/30 shadow-pastel">
-                <Gamepad2 className="h-14 w-14 text-primary" />
+                <UserPlus className="h-14 w-14 text-primary" />
               </div>
             </div>
             <div className="space-y-2">
-              <CardTitle className="text-4xl font-bold">Bienvenido a Journal de Jueguitos</CardTitle>
+              <CardTitle className="text-4xl font-bold">Crear Cuenta</CardTitle>
               <CardDescription className="text-base text-muted-foreground">
-                Ingresa tu usuario y contraseña para acceder a tu biblioteca
+                Únete a Journal de Jueguitos y comienza tu biblioteca
               </CardDescription>
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
-            {showSuccess && (
-              <div className="bg-green-500/10 border border-green-500/50 rounded-lg p-4">
-                <p className="text-sm text-green-600 dark:text-green-400">
-                  ¡Cuenta creada exitosamente! Ahora puedes iniciar sesión.
-                </p>
+            {errors.length > 0 && (
+              <div className="bg-destructive/10 border border-destructive/50 rounded-lg p-4 space-y-2">
+                {errors.map((error, i) => (
+                  <p key={i} className="text-sm text-destructive">{error}</p>
+                ))}
               </div>
             )}
 
-            {error && (
-              <div className="bg-destructive/10 border border-destructive/50 rounded-lg p-4">
-                <p className="text-sm text-destructive">{error}</p>
-              </div>
-            )}
-
-            <form onSubmit={handleLogin} className="space-y-5">
+            <form onSubmit={handleRegister} className="space-y-5">
               <div className="space-y-2">
                 <Label htmlFor="username" className="text-base font-medium">Usuario</Label>
                 <Input
                   id="username"
                   type="text"
-                  placeholder="Ingresa tu nombre de usuario"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="tu_usuario"
+                  value={formData.username}
+                  onChange={(e) => setFormData({...formData, username: e.target.value})}
                   disabled={loading}
                   autoFocus
                   required
                   minLength={2}
-                  className="h-12 text-lg border-primary/50 focus:border-primary focus:ring-primary/20"
+                  className="h-12 text-lg"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-base font-medium">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="tu@email.com"
+                  value={formData.email}
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  disabled={loading}
+                  required
+                  className="h-12 text-lg"
                 />
               </div>
 
@@ -120,12 +120,27 @@ export default function LoginPage() {
                 <Input
                   id="password"
                   type="password"
-                  placeholder="Ingresa tu contraseña"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Mínimo 8 caracteres, mayúscula, minúscula y número"
+                  value={formData.password}
+                  onChange={(e) => setFormData({...formData, password: e.target.value})}
                   disabled={loading}
                   required
-                  className="h-12 text-lg border-primary/50 focus:border-primary focus:ring-primary/20"
+                  minLength={8}
+                  className="h-12 text-lg"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword" className="text-base font-medium">Confirmar Contraseña</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  placeholder="Repite tu contraseña"
+                  value={formData.confirmPassword}
+                  onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
+                  disabled={loading}
+                  required
+                  className="h-12 text-lg"
                 />
               </div>
 
@@ -137,12 +152,12 @@ export default function LoginPage() {
                 {loading ? (
                   <>
                     <Loader2 className="h-5 w-5 animate-spin" />
-                    Cargando...
+                    Creando Cuenta...
                   </>
                 ) : (
                   <>
                     <Sparkles className="h-5 w-5" />
-                    Iniciar Sesión
+                    Crear Cuenta
                   </>
                 )}
               </Button>
@@ -153,7 +168,7 @@ export default function LoginPage() {
                 <span className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-3 text-muted-foreground">¿No tienes cuenta?</span>
+                <span className="bg-card px-3 text-muted-foreground">¿Ya tienes cuenta?</span>
               </div>
             </div>
 
@@ -162,15 +177,12 @@ export default function LoginPage() {
               variant="outline"
               className="w-full h-12 text-base border-primary/50 hover:bg-primary/10"
             >
-              <Link href="/register" className="cursor-pointer">
-                Crear Cuenta Nueva
+              <Link href="/login" className="cursor-pointer">
+                Iniciar Sesión
               </Link>
             </Button>
           </CardContent>
         </Card>
-        <p className="text-center text-xs text-muted-foreground mt-8">
-          Potenciado por IGDB • Construido con 💜
-        </p>
       </div>
     </div>
   )

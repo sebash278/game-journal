@@ -9,18 +9,9 @@ export async function PUT(
 ) {
   try {
     const { id } = await params
-    const username = await getCurrentUser()
-    if (!username) {
+    const currentUser = await getCurrentUser()
+    if (!currentUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Get user from database
-    const user = await prisma.user.findUnique({
-      where: { username },
-    })
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
     // Check if journal exists and belongs to user
@@ -32,7 +23,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Journal entry not found' }, { status: 404 })
     }
 
-    if (journal.userId !== user.id) {
+    if (journal.userId !== currentUser.userId) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
@@ -70,20 +61,10 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params
-    const username = await getCurrentUser()
-    console.log('Delete request - Username:', username)
-    if (!username) {
+    const currentUser = await getCurrentUser()
+    console.log('Delete request - CurrentUser:', currentUser)
+    if (!currentUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Get user from database
-    const user = await prisma.user.findUnique({
-      where: { username },
-    })
-    console.log('Delete request - User found:', user?.id)
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
     // Check if journal exists and belongs to user
@@ -96,8 +77,8 @@ export async function DELETE(
       return NextResponse.json({ error: 'Journal entry not found' }, { status: 404 })
     }
 
-    if (journal.userId !== user.id) {
-      console.log('Delete request - Forbidden: journal.userId=', journal.userId, 'user.id=', user.id)
+    if (journal.userId !== currentUser.userId) {
+      console.log('Delete request - Forbidden: journal.userId=', journal.userId, 'currentUser.userId=', currentUser.userId)
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 

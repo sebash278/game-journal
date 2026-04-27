@@ -2,10 +2,10 @@ import { NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth'
 
 export async function GET() {
-  const username = await getCurrentUser()
-  if (!username) {
+  const currentUser = await getCurrentUser()
+  if (!currentUser) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }
 
-  return NextResponse.json({ username })
+  return NextResponse.json({ userId: currentUser.userId, username: currentUser.username })
 }

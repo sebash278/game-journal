@@ -1,29 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getGameById } from '@/lib/igdb'
-import { getCurrentUser, ensureUser } from '@/lib/auth'
+import { getCurrentUser } from '@/lib/auth'
 
 // Get all journal entries
 export async function GET(request: NextRequest) {
   try {
-    const username = await getCurrentUser()
-    if (!username) {
+    const currentUser = await getCurrentUser()
+    if (!currentUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Get user from database
-    const user = await prisma.user.findUnique({
-      where: { username },
-    })
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
     const searchParams = request.nextUrl.searchParams
     const status = searchParams.get('status')
 
-    const where: any = { userId: user.id }
+    const where: any = { userId: currentUser.userId }
 
     if (status) {
       where.status = status
@@ -52,8 +43,8 @@ export async function GET(request: NextRequest) {
 // Add a new game to the journal
 export async function POST(request: NextRequest) {
   try {
-    const username = await getCurrentUser()
-    if (!username) {
+    const currentUser = await getCurrentUser()
+    if (!currentUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -66,9 +57,6 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
-
-    // Ensure user exists and get their ID
-    const user = await ensureUser(username)
 
     // Fetch game details from IGDB
     const igdbGame = await getGameById(parseInt(igdbId))
@@ -106,7 +94,7 @@ export async function POST(request: NextRequest) {
     const existingJournal = await prisma.journal.findUnique({
       where: {
         userId_gameId: {
-          userId: user.id,
+          userId: currentUser.userId,
           gameId: game.id,
         },
       },
@@ -122,7 +110,7 @@ export async function POST(request: NextRequest) {
     // Create journal entry
     const journal = await prisma.journal.create({
       data: {
-        userId: user.id,
+        userId: currentUser.userId,
         gameId: game.id,
         status,
       },

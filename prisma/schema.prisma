@@ -18,10 +18,12 @@ model User {
   username  String   @unique
   email     String   @unique
   name      String?
-  password  String?
+  password  String
   journals  Journal[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([username])
 }
 
 model Game {
