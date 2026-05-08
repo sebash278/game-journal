@@ -21,7 +21,11 @@ export const metadata: Metadata = {
   title: "Journal de Jueguitos",
   description: "Rastrea tu viaje como jugador con integración de IGDB",
   icons: {
-    icon: "/icon.png",
+    icon: [
+      { url: "/icon.png", sizes: "512x512", type: "image/png" },
+      { url: "/icon.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: { url: "/icon.png", sizes: "180x180", type: "image/png" },
   },
 };
 
@@ -38,11 +42,8 @@ export default function RootLayout({
         <ThemeProvider defaultTheme="system" storageKey="game-journal-theme">
           <nav className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
             <div className="w-full max-w-screen-2xl mx-auto px-6 flex h-16 items-center">
-              <Link href="/" className="mr-8 flex items-center space-x-3 group">
-                <img src="/icon.png" alt="Journal de Jueguitos" className="h-8 w-8 rounded-lg" />
-                <span className="text-2xl font-bold text-gradient group-hover:opacity-80 transition-opacity">
-                  Journal de Jueguitos
-                </span>
+              <Link href="/" className="mr-8 flex items-center group">
+                <img src="/icon.png" alt="Journal de Jueguitos" className="h-10 w-auto rounded-lg group-hover:opacity-80 transition-opacity" />
               </Link>
               <nav className="flex items-center space-x-2 text-sm font-medium flex-1">
                 <NavLinks />
