@@ -20,6 +20,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Journal de Jueguitos",
   description: "Rastrea tu viaje como jugador con integración de IGDB",
+  icons: {
+    icon: "/icon.png",
+  },
 };
 
 export default function RootLayout({
@@ -35,7 +38,8 @@ export default function RootLayout({
         <ThemeProvider defaultTheme="system" storageKey="game-journal-theme">
           <nav className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
             <div className="w-full max-w-screen-2xl mx-auto px-6 flex h-16 items-center">
-              <Link href="/" className="mr-8 flex items-center space-x-2 group">
+              <Link href="/" className="mr-8 flex items-center space-x-3 group">
+                <img src="/icon.png" alt="Journal de Jueguitos" className="h-8 w-8 rounded-lg" />
                 <span className="text-2xl font-bold text-gradient group-hover:opacity-80 transition-opacity">
                   Journal de Jueguitos
                 </span>

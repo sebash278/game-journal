@@ -67,7 +67,7 @@ export default function HomePage() {
           </h1>
           <p className="text-muted-foreground text-xl max-w-2xl mx-auto leading-relaxed">
             Rastrea tu viaje como jugador, descubre nuevos juegos y guarda notas de tus títulos favoritos.
-            Potenciado por la base de datos IGDB con una estética pastel hermosa.
+            Potenciado por la base de datos de IGDB.
           </p>
           <div className="flex gap-4 justify-center pt-4">
             <Button
